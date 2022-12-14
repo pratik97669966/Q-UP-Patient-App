@@ -122,7 +122,7 @@ const Login = () => {
           >
             <Avatar
               src="https://qupapp.com/assets/img/favicon.png"
-              sx={{ width: 56, height: 56 }}
+              sx={{ width: 90, height: 90 }}
             />
             <Typography variant="h5" component="h5">
               Welcome
