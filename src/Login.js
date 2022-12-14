@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -15,8 +14,10 @@ import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import basic from "basic-authorization-header";
 import axios from "axios";
-var stringname = "";
+var finalMobileNumber = "";
+var finalOtp = "";
 function Copyright(props) {
   return (
     <Typography
@@ -45,18 +46,20 @@ const Login = () => {
 
   const [mobile, setMobile] = React.useState({});
 
+  const [otp, setOtp] = React.useState("");
+
   const signIn = async () => {
     const payload = {
       requestedRole: "PATIENT",
     };
     const responce = await axios({
       method: "post",
-      url: `https://api.qupdev.com/userauth/users/sign-in/` + stringname,
+      url: `https://api.qupdev.com/userauth/users/sign-in/` + finalMobileNumber,
       // url: `http://68.183.83.230:8765/userauth/users/sign-in/`+stringname,
       data: payload, // you are sending body instead
 
       headers: {
-        // Authorization: `bearer ${token}`,
+        // "Authorization": `bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
@@ -65,30 +68,36 @@ const Login = () => {
   };
 
   const verifyOtp = async () => {
-    const payload = {
-      requestedRole: "PATIENT",
-    };
+    console.log("button Clicked");
+    const data2 = new FormData();
+    data2.append("scope", "openid");
+    data2.append("grant_type", "password");
+    data2.append("username", finalMobileNumber);
+    data2.append("password", finalOtp);
+
     const responce = await axios({
+      
       method: "post",
-      url: `https://api.qupdev.comuserauth/oauth/token`,
-      data: payload, // you are sending body instead
+      url: `https://api.qupdev.com/userauth/oauth/token`,
 
       headers: {
-        // Authorization: `bearer ${token}`,
-        "Content-Type": "application/json",
+        'Authorization': 'Basic '+btoa('qup-mobile:mob@46$qup'),
       },
+      data: data2, // you are sending body instead
     });
-    console.log("linkId", responce.data);
-    setMobile(responce.data);
+    console.log("otp", responce.data);
+    setOtp(responce.data);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-
   };
   const handleChange = (event) => {
-    stringname = (event.target.value) + "";
+    finalMobileNumber = event.target.value + "";
+  };
+  const handelOtp = (event) => {
+    finalOtp = event.target.value + "";
   };
   return (
     <ThemeProvider theme={theme}>
@@ -126,7 +135,8 @@ const Login = () => {
             />
             <Typography variant="h5" component="h5">
               Welcome
-            </Typography>;
+            </Typography>
+            ;
             <Typography component="h6" variant="h6">
               Book appointment for your doctor
             </Typography>
@@ -162,6 +172,7 @@ const Login = () => {
                 fullWidth
                 name="OTP"
                 label="OTP"
+                onChange={handelOtp}
                 type="OTP"
                 id="OTP"
                 autoComplete="current-OTP"
